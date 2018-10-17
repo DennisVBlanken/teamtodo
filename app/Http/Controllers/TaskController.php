@@ -64,9 +64,17 @@ class TaskController extends Controller
      * @param  \App\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function edit(Task $task)
+    public function done(Request $request, $id)
     {
-        //
+        $task = Task::find($id);
+        $task->done = $request->get('done');
+        $task->save();
+
+        return response()->json([
+           'id' => $task->id,
+           'content' => $task->content,
+            'done' => $task->done
+        ]);
     }
 
     /**
@@ -96,5 +104,18 @@ class TaskController extends Controller
         $task = Task::find($id);
         $task->delete();
         return back();
+    }
+
+    public function editAjax(Request $request, $id)
+    {
+        $task = Task::find($id);
+        $task->content = $request->get('name');
+        $task->save();
+        return response()->json([
+            'succes' => 'Updated',
+            'error' => 'error',
+            'id' => $task->id,
+            'content' => $task->content,
+        ]);
     }
 }
