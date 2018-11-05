@@ -45,7 +45,8 @@ class TodoController extends Controller
 
     public function storeTodoUser(Request $request)
     {
-        $user = User::where('name', '=', $request->get('user'))->first();
+        $userid = User::where('name', '=', $request->get('user'))->first()->id;
+        $user = TodoUser::where('user_id', '=', $userid)->where('todo_id', '=', $request->get('todo_id'))->first();
         if ($user === null) {
             $todoUser = new TodoUser();
                 $user_name = $request->get('user');
@@ -53,7 +54,7 @@ class TodoController extends Controller
                 $todoUser->todo_id = $request->get('todo_id');
             $todoUser->save();
             
-            return redirect('/')->with('success', 'User has been added.');
+            return redirect('/todo/'.$request->get('todo_id'))->with('success', 'User has been added.');
         }
         return redirect('/todo/'.$request->get('todo_id'))->with('error', 'User has already been added to this list.');
     }
@@ -82,7 +83,12 @@ class TodoController extends Controller
      */
     public function show(Todo $todo)
     {
-        return view('todo.show', compact('todo'));
+        $users = TodoUser::where('todo_id', '=', $todo->id)->get();
+        $todoUsers = array();
+        foreach ($users as $user) {
+            $todoUsers[$user->user_id] = User::where('id', '=', $user->user_id);
+        }
+        return view('todo.show', compact('todo'), compact('todoUsers'));
     }
 
     /**
@@ -126,6 +132,15 @@ class TodoController extends Controller
         $todo = Todo::find($id);
 
         $todo->delete();
+
+        return back();
+    }
+
+    public function destroyTodoUser($id)
+    {
+        $todoUser = TodoUser::where('user_id', $id);
+
+        $todoUser->delete();
 
         return back();
     }

@@ -8,3 +8,15 @@
 .col-sm-4 {
 	max-width: 95%;
 }
+
+.todoUsers {
+	width: 200px;
+    margin: 0;
+    float: right;
+    border: 1px solid #e2e2e2;
+}
+
+.todoUser p {
+	padding: 0 20px;
+    margin: 0;
+}
