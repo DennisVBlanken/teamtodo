@@ -54,7 +54,7 @@ class TodoController extends Controller
                 $todoUser->todo_id = $request->get('todo_id');
             $todoUser->save();
             
-            return redirect('/')->with('success', 'User has been added.');
+            return redirect('/todo/'.$request->get('todo_id'))->with('success', 'User has been added.');
         }
         return redirect('/todo/'.$request->get('todo_id'))->with('error', 'User has already been added to this list.');
     }
@@ -132,6 +132,15 @@ class TodoController extends Controller
         $todo = Todo::find($id);
 
         $todo->delete();
+
+        return back();
+    }
+
+    public function destroyTodoUser($id)
+    {
+        $todoUser = TodoUser::where('user_id', $id);
+
+        $todoUser->delete();
 
         return back();
     }

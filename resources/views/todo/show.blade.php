@@ -2,6 +2,7 @@
 
 
 @section('content')
+    <link href="{{ asset('css/hometodo.css') }}" rel="stylesheet">
     <div class="form-group row">
         <div class="col-xs-2" id="foto">
             <h1 data-id="{{$todo->id}}" id="title">{{ $todo->name }} <img src="/imgs/pencil.png" alt="pencil" style="cursor: pointer;"></h1>
@@ -42,16 +43,16 @@
     </div>
 
 <hr>
-
-<div class="row todoUsers">
+<?php if ($todoUsers) { ?>
+<div class="todoUsers">
     <div class="todoUser"></div>
     @foreach($todoUsers as $todoUser)
         <div class="todoUser">
-            <p>{{ $todoUser->get()[0]->name }}</p>
+            <p>{{ $todoUser->get()[0]->name }}<a href="/delete/todoUser/{{$todoUser->get()[0]->id}}" onclick="return confirm('Are you sure?')" class="ml-5">x</a></p>
         </div>
     @endforeach
 </div>
-
+<?php } ?>
 <div class="row justify-content-center">
     <div style="margin-bottom: 20px;" class="col-md-8">
         <div class="card">
