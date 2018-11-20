@@ -11,137 +11,137 @@ use App\User;
 
 class TodoController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $todos = Todo::all();
-        $yourTodos = Todo::where('user_id', '=', Auth::user()->id)->get();
-        return view(
-            'todo.index',
-            compact('todos'),
-            compact('yourTodos'));
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		$todos = Todo::all();
+		$yourTodos = Todo::where('user_id', '=', Auth::user()->id)->get();
+		return view(
+			'todo.index',
+			compact('todos'),
+			compact('yourTodos'));
 
 //        $todos = Todo::orderBy('name', 'desc')->paginate(5);
 //        return view('todo.index')->with('todos', $todos);
-    }
+	}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('todo.create');
-    }
+	/**
+	 * Show the form for creating a new resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function create()
+	{
+		return view('todo.create');
+	}
 
-    public function storeTodoUser(Request $request)
-    {
-        $userid = User::where('name', '=', $request->get('user'))->first()->id;
-        $user = TodoUser::where('user_id', '=', $userid)->where('todo_id', '=', $request->get('todo_id'))->first();
-        if ($user === null) {
-            $todoUser = new TodoUser();
-                $user_name = $request->get('user');
-                $todoUser->user_id = User::where('name', $user_name)->first()->id;
-                $todoUser->todo_id = $request->get('todo_id');
-            $todoUser->save();
-            
-            return redirect('/todo/'.$request->get('todo_id'))->with('success', 'User has been added.');
-        }
-        return redirect('/todo/'.$request->get('todo_id'))->with('error', 'User has already been added to this list.');
-    }
+	public function storeTodoUser(Request $request)
+	{
+		$userid = User::where('name', '=', $request->get('user'))->first()->id;
+		$user = TodoUser::where('user_id', '=', $userid)->where('todo_id', '=', $request->get('todo_id'))->first();
+		if ($user === null) {
+			$todoUser = new TodoUser();
+				$user_name = $request->get('user');
+				$todoUser->user_id = User::where('name', $user_name)->first()->id;
+				$todoUser->todo_id = $request->get('todo_id');
+			$todoUser->save();
+			
+			return redirect('/todo/'.$request->get('todo_id'))->with('success', 'User has been added.');
+		}
+		return redirect('/todo/'.$request->get('todo_id'))->with('error', 'User has already been added to this list.');
+	}
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $todo = new Todo();
-            $todo->name = $request->get('name');
-            $todo->user_id = $request->get('user_id');
-        $todo->save();
-        
-        return redirect('/')->with('success', 'Todo list has been made.');
-    }
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store(Request $request)
+	{
+		$todo = new Todo();
+			$todo->name = $request->get('name');
+			$todo->user_id = $request->get('user_id');
+		$todo->save();
+		
+		return redirect('/')->with('success', 'Todo list has been made.');
+	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Todo $todo)
-    {
-        $users = TodoUser::where('todo_id', '=', $todo->id)->get();
-        $todoUsers = array();
-        foreach ($users as $user) {
-            $todoUsers[$user->user_id] = User::where('id', '=', $user->user_id);
-        }
-        return view('todo.show', compact('todo'), compact('todoUsers'));
-    }
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show(Todo $todo)
+	{
+		$users = TodoUser::where('todo_id', '=', $todo->id)->get();
+		$todoUsers = array();
+		foreach ($users as $user) {
+			$todoUsers[$user->user_id] = User::where('id', '=', $user->user_id);
+		}
+		return view('todo.show', compact('todo'), compact('todoUsers'));
+	}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function edit($id)
+	{
 
-    }
+	}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $todo = Todo::find($id);
-        $todo->name = $request->get('name');
-        $todo->save();
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		$todo = Todo::find($id);
+		$todo->name = $request->get('name');
+		$todo->save();
 
-            return response()->json([
-                'id' => $todo->id,
-                'name' => $todo->name,
-            ]);
-    }
+			return response()->json([
+				'id' => $todo->id,
+				'name' => $todo->name,
+			]);
+	}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $todo = Todo::find($id);
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		$todo = Todo::find($id);
 
-        $todo->delete();
+		$todo->delete();
 
-        return back();
-    }
+		return back();
+	}
 
-    public function destroyTodoUser($id)
-    {
-        $todoUser = TodoUser::where('user_id', $id);
+	public function destroyTodoUser($id)
+	{
+		$todoUser = TodoUser::where('user_id', $id);
 
-        $todoUser->delete();
+		$todoUser->delete();
 
-        return back();
-    }
+		return back();
+	}
 }
